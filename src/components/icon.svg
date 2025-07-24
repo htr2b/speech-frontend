@@ -1,0 +1,10 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- PDF sayfa şekli -->
+  <rect x="8" y="4" width="40" height="56" rx="4" ry="4" fill="#E53E3E"></rect>
+  <!-- Sayfa köşesi kıvrımı -->
+  <path d="M48 4H40V12H48V4Z" fill="#B83232"></path>
+  <!-- Ses dalgası (beyaz) -->
+  <path d="M20 24C20 28 22 32 26 34V30C24 28 22 26 22 24H20Z" fill="white"></path>
+  <path d="M26 20C28 22 30 26 30 30H32C32 25 29 21 26 20Z" fill="white"></path>
+  <path d="M34 18C38 22 38 30 34 34V30C36 27 36 23 34 18Z" fill="white"></path>
+</svg>
