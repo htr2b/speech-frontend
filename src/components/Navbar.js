@@ -1,9 +1,10 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
+import { NavLink } from 'react-router-dom'
 import { FiHome } from 'react-icons/fi'
-import { RiLogoutBoxLine } from "react-icons/ri"
 import { FaPlus } from "react-icons/fa"
 import { useState } from 'react'
+import "../App.css"
+
 const initialList = []
 let idCounter = 1
 const Navbar = ({ show }) => {
@@ -18,23 +19,18 @@ const Navbar = ({ show }) => {
         <div className={show ? 'sidenav active' : 'sidenav'}>
             <ul>
                 <li>
-                    <Link to='/'><FiHome />Home</Link>
+                    <NavLink to='/'><FiHome />Home</NavLink>
                 </li>
                 <li>
-                    <Link to={`/chat/${idCounter}`} onClick={handleAdd} type='submit'><FaPlus />New Chat</Link>
+                    <NavLink to={`/chat/${idCounter}`} onClick={handleAdd} type='submit'><FaPlus />New Chat</NavLink>
                 </li>
                 <ul>
                     <li>
                         {list.map((item) => (
-                            <Link to={`/chat/${item.id}`} key={item.id} >Chat {item.id} </Link>
+                            <NavLink className='linkItem' to={`/chat/${item.id}`} key={item.id} >Chat {item.id} </NavLink>
                         ))}
                     </li>
                 </ul>
-                <div className='logout'>
-                    <li>
-                        <Link to='/login'><RiLogoutBoxLine />Logout</Link>
-                    </li>
-                </div>
 
             </ul>
 

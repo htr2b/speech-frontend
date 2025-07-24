@@ -17,11 +17,11 @@ header {
   padding-left: 4vw;
 }
 .sidenav {
-  widht: 20vw;
-  height: 93vh;
-  position: absolute;
+  width: 15vw;
+  height: 100vh;
+  position: fixed;
   background: #011627;
-  padding: 0 2vh;
+  padding: 1vh 2vh;
   transition: all 0.5s;
   left: -100%;
 }
@@ -62,9 +62,9 @@ header svg {
 
 .main-active {
   height: 90vh;
-  display: flex;
+  display: fixed;
   margin-left: 18vw;
-  font-size: 25px;
+  font-size: 1.5vw;
   color: black;
 }
 
@@ -80,4 +80,36 @@ header svg {
   position: absolute;
   padding: 2vh;
   right: 2vw;
+}
+
+.dropdown {
+  width: 6vw;
+  height: 10vh;
+  position: absolute;
+  background: #172b4dff;
+  padding: 2vh;
+  transition: all 0.5s;
+  display: none;
+  top: 6vh;
+  border-radius: 30% 10% 30% 30%;
+}
+
+.dropdown.active {
+  right: 4vw;
+  display: block;
+}
+
+.dropdown ul li a {
+  position: absolute;
+  background: #011627ff;
+}
+
+.upgradePlan {
+  background: #011627ff;
+  border-radius: 6px;
+  color: white;
+  width: 10vw;
+  height: 5vh;
+  outline: none;
+  border: none;
 }

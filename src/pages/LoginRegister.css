@@ -1,0 +1,9 @@
+.wrapper {
+  position: fixed;
+  padding-left: 42.5vw;
+  padding-top: 10vh;
+}
+
+.heading {
+  padding-bottom: 2vh;
+}
