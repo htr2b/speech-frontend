@@ -51,9 +51,22 @@ ul li a {
   margin: 15px 0;
 }
 
-ul li a:hover,
-ul li a.active {
+ul li a:hover {
   background: #172b4d;
+}
+
+.linkItem {
+  display: block;
+  padding: 10px 15px;
+  color: #eaecef;
+  text-decoration: none;
+  border-radius: 6px;
+  transition: background 0.3s;
+}
+
+.linkItem.active {
+  background-color: #1e2a38;
+  font-weight: bold;
 }
 
 header svg {
@@ -112,4 +125,44 @@ header svg {
   height: 5vh;
   outline: none;
   border: none;
+}
+
+.result-prg {
+  position: fixed;
+  padding-top: 13vh;
+}
+
+.upload-label {
+  position: absolute;
+  margin-left: 25vw;
+  margin-top: 5vh;
+  margin-bottom: 5vh;
+
+  padding: 12px 24px;
+  background-color: #011627ff;
+  color: #fff;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.upload-label:hover {
+  background-color: #172b4dff;
+}
+
+.upload-label:active {
+  background-color: #172b4dff;
+}
+
+.upload-input {
+  display: none;
+}
+
+.audio-to-text {
+  width: 79.7vw;
+  height: 40vh;
+  border: 1px solid #1f1f1fff;
+  position: fixed;
+  margin-top: 20vh;
+  padding: 1vh;
+  color: #000000ff;
 }

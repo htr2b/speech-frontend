@@ -19,22 +19,28 @@ const Navbar = ({ show }) => {
         <div className={show ? 'sidenav active' : 'sidenav'}>
             <ul>
                 <li>
-                    <NavLink to='/'><FiHome />Home</NavLink>
+                    <NavLink to='/' className="linkItem">
+                        <FiHome /> Home
+                    </NavLink>
                 </li>
                 <li>
-                    <NavLink to={`/chat/${idCounter}`} onClick={handleAdd} type='submit'><FaPlus />New Chat</NavLink>
+                    <NavLink onClick={handleAdd} type='submit' >
+                        <FaPlus /> New Chat
+                    </NavLink>
                 </li>
-                <ul>
-                    <li>
-                        {list.map((item) => (
-                            <NavLink className='linkItem' to={`/chat/${item.id}`} key={item.id} >Chat {item.id} </NavLink>
-                        ))}
+                {list.map((item) => (
+                    <li key={item.id}>
+                        <NavLink
+                            to={`/chat/${item.id}`}
+                            className={({ isActive }) => isActive ? 'linkItem active' : 'linkItem'}
+                        >
+                            Chat {item.id}
+                        </NavLink>
                     </li>
-                </ul>
-
+                ))}
             </ul>
+        </div>
 
-        </div >
 
     )
 

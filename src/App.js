@@ -38,7 +38,7 @@ const AppContent = () => {
       <main className={isAuthPage ? 'main' : 'main-active'}>
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/chat" element={<Chat />} />
+          <Route path="/chat/:id" element={<Chat />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
         </Routes>
