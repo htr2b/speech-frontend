@@ -1,43 +1,142 @@
-import React from "react"
-import { NavLink } from "react-router-dom"
+import { useRef, useState } from "react"
+import { Link } from "react-router-dom"
+import { supabase } from "../supabase/client"
 import './LoginRegister.css'
 
-export default function Register() {
+const Register = () => {
+    const nameRef = useRef(null)
+    const emailRef = useRef(null)
+    const passwordRef = useRef(null)
+    const confirmPasswordRef = useRef(null)
+
+    const [errorMsg, setErrorMsg] = useState("")
+    const [msg, setMsg] = useState("")
+    const [loading, setLoading] = useState(false)
+
+    const handleSubmit = async (e) => {
+        e.preventDefault()
+
+        const name = nameRef.current?.value.trim()
+        const email = emailRef.current?.value.trim()
+        const password = passwordRef.current?.value
+        const confirmPassword = confirmPasswordRef.current?.value
+
+        if (!name || !email || !password || !confirmPassword) {
+            setErrorMsg("Fill all the blocks")
+            return
+        }
+
+        if (password !== confirmPassword) {
+            setErrorMsg("Passwords doesn't match.")
+            return
+        }
+
+        try {
+            setErrorMsg("")
+            setMsg("")
+            setLoading(true)
+
+            const { data, error } = await supabase.auth.signUp({
+                email,
+                password,
+            })
+
+            if (error) {
+                setErrorMsg(error.message)
+                return
+            }
+
+            if (data?.user) {
+                const { id } = data.user
+
+                const { error: insertError } = await supabase
+                    .from("users")
+                    .insert([
+                        {
+                            auth_user_id: id,
+                            email: email,
+                            full_name: name,
+                            role: "free",
+                            created_at: new Date().toISOString()
+                        }
+                    ])
+
+                if (insertError) {
+                    console.error("Insert error:", insertError)
+                    setErrorMsg("Kullanıcı verisi eklenirken hata oluştu: " + insertError.message)
+                    return
+                }
+
+                setMsg("Successfuly Registered.Check your mail box.")
+            }
+        } catch (err) {
+            console.error("Register error:", err)
+            setErrorMsg("Kayıt işlemi sırasında bir hata oluştu.")
+        } finally {
+            setLoading(false)
+        }
+    }
+
     return (
         <div className="wrapper">
-
             <div className="form">
-                <div className="heading">CREATE AN ACCOUNT</div>
-                <form>
+                <h2 className="heading">Register</h2>
+
+                {errorMsg && <div className="error-message">{errorMsg}</div>}
+                {msg && <div className="success-message">{msg}</div>}
+
+                <form onSubmit={handleSubmit}>
                     <div>
-                        <label htmlFor="name">Name</label>
-                        <input type="text" id="name" placeholder="Enter your name" />
+                        <label htmlFor="name">Full Name</label>
+                        <input
+                            type="text"
+                            id="name"
+                            ref={nameRef}
+                            required
+                        />
                     </div>
+
                     <div>
-                        <label htmlFor="name">E-Mail</label>
-                        <input type="text" id="e-mail" placeholder="Enter your mail" />
+                        <label htmlFor="email">E-mail</label>
+                        <input
+                            type="email"
+                            id="email"
+                            ref={emailRef}
+                            required
+                        />
                     </div>
+
                     <div>
                         <label htmlFor="password">Password</label>
                         <input
                             type="password"
                             id="password"
-                            placeholder="Enter you password"
+                            ref={passwordRef}
+                            required
                         />
                     </div>
-                    <NavLink to="/">
-                        <button type="button">
-                            Register
-                        </button>
-                    </NavLink>
-                    <h2 align="center" >
-                        OR
-                    </h2>
+
+                    <div>
+                        <label htmlFor="confirm-password">Confirm Password </label>
+                        <input
+                            type="password"
+                            id="confirm-password"
+                            ref={confirmPasswordRef}
+                            required
+                        />
+                    </div>
+
+                    <button type="submit" disabled={loading}>
+                        {loading ? "Registering..." : "Register"}
+                    </button>
                 </form>
+
                 <p>
-                    Have an account ? <NavLink to="/login"> Login </NavLink>
+                    Do you have an account? <Link to="/login">Login</Link>
                 </p>
             </div>
-        </div >
+        </div>
     )
 }
+
+export default Register
