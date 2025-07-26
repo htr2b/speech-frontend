@@ -9,6 +9,7 @@ import ProfileMenu from './components/ProfileMenu'
 import logo from './components/icon.svg'
 import { FaRegUser } from 'react-icons/fa'
 import './App.css'
+import AuthProvider from './context/AuthProvider'
 
 const AppContent = () => {
   const location = useLocation()
@@ -48,9 +49,12 @@ const AppContent = () => {
 }
 
 const App = () => (
-  <Router>
-    <AppContent />
-  </Router>
+  <AuthProvider>
+    <Router>
+      <AppContent />
+    </Router>
+  </AuthProvider>
+
 )
 
 export default App

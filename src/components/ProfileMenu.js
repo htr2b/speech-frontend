@@ -1,27 +1,28 @@
 import React from 'react'
-import { NavLink } from 'react-router-dom'
-import { RiLogoutBoxLine } from "react-icons/ri"
+import { useNavigate } from 'react-router-dom'
+import { RiLogoutBoxLine } from 'react-icons/ri'
+import { useAuth } from '../context/AuthProvider'
+import { supabase } from '../supabase/client'
 
 const ProfileMenu = ({ show }) => {
+    const { user } = useAuth()
+    const navigate = useNavigate()
+
+    const handleLogout = async () => {
+        await supabase.auth.signOut()
+        navigate('/login')
+    }
 
     return (
         <div className={show ? 'dropdown active' : 'dropdown'}>
             <ul>
-                <li>
-                    Onur Kahan
+                <li>{user?.email}</li>
+                <li className="logout" onClick={handleLogout}>
+                    <RiLogoutBoxLine /> Çıkış Yap
                 </li>
-                <div className='logout'>
-                    <li>
-                        <NavLink to='/login'><RiLogoutBoxLine />Logout</NavLink>
-                    </li>
-                </div>
-
             </ul>
-
-        </div >
-
+        </div>
     )
-
 }
 
 export default ProfileMenu
