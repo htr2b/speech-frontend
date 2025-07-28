@@ -1,49 +1,80 @@
-import React from 'react'
-import { NavLink } from 'react-router-dom'
+import React, { useEffect, useState } from 'react'
+import { NavLink, useNavigate } from 'react-router-dom'
 import { FiHome } from 'react-icons/fi'
-import { FaPlus } from "react-icons/fa"
-import { useState } from 'react'
-import "../App.css"
+import { FaPlus } from 'react-icons/fa'
+import '../App.css'
 
-const initialList = []
-let idCounter = 1
 const Navbar = ({ show }) => {
-    const [list, setList] = useState(initialList)
+    const [historyChats, setHistoryChats] = useState([])
+    const token = localStorage.getItem('token')
+    const navigate = useNavigate()
 
-    function handleAdd() {
-        const newList = list.concat({ id: idCounter })
-        idCounter++
-        setList(newList)
+    const handleAdd = () => {
+        navigate('/chat/0')
     }
+
+
+    useEffect(() => {
+        let intervalId
+
+        const fetchHistory = async () => {
+            if (!token) return
+            try {
+                const res = await fetch('http://localhost:3001/history', {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                })
+                if (res.ok) {
+                    const data = await res.json()
+                    setHistoryChats(data || [])
+                } else {
+                    const error = await res.json()
+                    console.error("History fetch failed:", error)
+                }
+            } catch (err) {
+                console.error("History fetch error:", err)
+            }
+        }
+
+        fetchHistory()
+        intervalId = setInterval(fetchHistory, 5000)
+        return () => clearInterval(intervalId)
+    }, [token])
+
+
+
     return (
         <div className={show ? 'sidenav active' : 'sidenav'}>
             <ul>
                 <li>
-                    <NavLink to='/' className="linkItem">
+                    <NavLink to="/" className="linkItem">
                         <FiHome /> Home
                     </NavLink>
                 </li>
                 <li>
-                    <NavLink onClick={handleAdd} type='submit' >
+                    <button
+                        onClick={handleAdd}
+                        className="linkItem"
+                        style={{ background: "none", border: "none", cursor: "pointer" }}
+                    >
                         <FaPlus /> New Chat
-                    </NavLink>
+                    </button>
                 </li>
-                {list.map((item) => (
-                    <li key={item.id}>
+
+                {historyChats.map((chat) => (
+                    <li key={`history-${chat.id}`}>
                         <NavLink
-                            to={`/chat/${item.id}`}
+                            to={`/chat/${chat.id}`}
                             className={({ isActive }) => isActive ? 'linkItem active' : 'linkItem'}
                         >
-                            Chat {item.id}
+                            {chat.title || `Chat ${chat.title}`}
                         </NavLink>
                     </li>
                 ))}
             </ul>
         </div>
-
-
     )
-
 }
 
 export default Navbar

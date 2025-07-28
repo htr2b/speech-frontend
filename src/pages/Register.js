@@ -1,6 +1,5 @@
 import { useRef, useState } from "react"
 import { Link } from "react-router-dom"
-import { supabase } from "../supabase/client"
 import './LoginRegister.css'
 
 const Register = () => {
@@ -36,39 +35,25 @@ const Register = () => {
             setMsg("")
             setLoading(true)
 
-            const { data, error } = await supabase.auth.signUp({
-                email,
-                password,
+            const res = await fetch("http://localhost:3001/user/register", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    email,
+                    password,
+                    full_name: name
+                })
             })
 
-            if (error) {
-                setErrorMsg(error.message)
+            const data = await res.json()
+            if (!res.ok) { // HTTP başarılı mı değil mi diye kontrol eder
+                setErrorMsg(data.error || "Register failed")
                 return
             }
 
-            if (data?.user) {
-                const { id } = data.user
+            setMsg(data.message || "Successfuly Registered. Check your mail box.")
 
-                const { error: insertError } = await supabase
-                    .from("users")
-                    .insert([
-                        {
-                            auth_user_id: id,
-                            email: email,
-                            full_name: name,
-                            role: "free",
-                            created_at: new Date().toISOString()
-                        }
-                    ])
 
-                if (insertError) {
-                    console.error("Insert error:", insertError)
-                    setErrorMsg("Kullanıcı verisi eklenirken hata oluştu: " + insertError.message)
-                    return
-                }
-
-                setMsg("Successfuly Registered.Check your mail box.")
-            }
         } catch (err) {
             console.error("Register error:", err)
             setErrorMsg("Kayıt işlemi sırasında bir hata oluştu.")

@@ -2,6 +2,40 @@ import React from 'react'
 import "../App.css"
 
 const Home = () => {
+
+    const handleUpgrade = async () => {
+        const token = localStorage.getItem('token')   // login olurken kaydettiğimiz token
+
+        if (!token) {
+            alert("Önce giriş yapmanız gerekiyor!")
+            return
+        }
+
+        try {
+            const res = await fetch("http://localhost:3001/pro", {
+                method: "GET",
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            })
+
+            const data = await res.json()
+            console.log("Upgrade response:", data)
+
+            if (!res.ok) {
+                alert(data.error || "Plan yükseltme başarısız!")
+                return
+            }
+
+            if (data.data === "pro") {
+                alert("Tebrikler! Planınız PRO olarak güncellendi 🎉")
+            }
+        } catch (err) {
+            console.error("Upgrade error:", err)
+            alert("Sunucuya bağlanırken bir hata oluştu.")
+        }
+    }
+
     return (
         <div>
             <h1>Welcome to the Speech Summarize AI APP</h1>
@@ -16,7 +50,9 @@ const Home = () => {
                     <li>Easy export and sharing options</li>
                 </ul>
             </section>
-            <button className='upgradePlan'>
+
+            {/* Buton tıklandığında handleUpgrade çalışacak */}
+            <button className='upgradePlan' onClick={handleUpgrade}>
                 Upgrade your plan to PRO
             </button>
         </div>

@@ -1,6 +1,5 @@
 import React, { useRef, useState } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
-import { supabase } from "../supabase/client"
 import './LoginRegister.css'
 
 const Login = () => {
@@ -27,24 +26,26 @@ const Login = () => {
             setErrorMsg("")
             setLoading(true)
 
-            // Supabase ile giriş yap
-            const { data, error } = await supabase.auth.signInWithPassword({
-                email: email,
-                password: password,
+            const res = await fetch("http://localhost:3001/user/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, password })
             })
 
-            if (error) {
-                setErrorMsg("E-posta veya şifre hatalı")
+            const data = await res.json()
+
+            if (!res.ok) {
+                setErrorMsg(data.error || "Register failed")
                 return
             }
 
-            if (data?.user) {
-                // Başarılı giriş, ana sayfaya yönlendir
-                navigate('/')
+            if (data.token) {
+                localStorage.setItem("token", data.token)
+                localStorage.setItem('email', email)
             }
 
+            navigate("/")
         } catch (err) {
-            console.error("Login error:", err)
             setErrorMsg("Giriş işlemi sırasında bir hata oluştu")
         } finally {
             setLoading(false)

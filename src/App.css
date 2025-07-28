@@ -11,7 +11,7 @@ body {
   padding: 0;
   font-family: "Rockwell", sans-serif;
   color: #eaecef;
-  background-color: #f5f5f5;
+  background-color: #fffdfdff;
 }
 
 header {
@@ -42,7 +42,7 @@ header {
   background: #011627;
   padding: 1vh 2vh;
   transition: left 0.5s;
-  left: -100%;
+  left: -15%;
 }
 
 .sidenav.active {
@@ -88,14 +88,14 @@ header svg,
 }
 
 .dropdown {
-  width: 6vw;
+  width: 10vw;
   height: 10vh;
   position: absolute;
-  top: 6vh;
-  right: 4vw;
-  background: #172b4dff;
-  padding: 2vh;
-  border-radius: 30% 10% 30% 30%;
+  top: 5vh;
+  overflow: hidden;
+  right: 3vw;
+  background: #eaecef;
+  border-radius: 30% 10% 30% 10%;
   display: none;
   transition: display 0.2s;
 }
@@ -104,11 +104,18 @@ header svg,
   display: block;
 }
 
-.dropdown ul li a {
-  background: #011627ff;
+.dropdown ul {
   position: relative;
-  padding: 8px;
-  color: #eaecef;
+  padding-left: 0.5vw;
+  padding-top: 1.5vh;
+  cursor: pointer;
+}
+
+.dropdown ul li {
+  position: relative;
+  color: #000000ff;
+  padding: 0.8vh;
+  cursor: pointer;
 }
 
 .main,
@@ -129,11 +136,11 @@ header svg,
 
 button,
 .upgradePlan {
-  padding: 10px 20px;
-  background-color: #007bff;
+  padding: 1vh;
+  background-color: #3e5e81ff;
   border: none;
   border-radius: 4px;
-  color: #fff;
+  color: #000;
   font-size: 1rem;
   cursor: pointer;
   transition: background-color 0.2s ease;
@@ -175,7 +182,7 @@ button:disabled {
   cursor: pointer;
   font-weight: 500;
   transition: background-color 0.2s ease;
-  color: #333;
+  color: #000;
 }
 
 .upload-label:hover {
@@ -189,25 +196,25 @@ button:disabled {
 .result-block {
   width: 100%;
   max-width: 600px;
-  background-color: #ffffff;
+  background-color: #a0a0a0ff;
   border: 1px solid #ddd;
   border-radius: 4px;
-  padding: 16px;
-  margin-top: 24px;
+  padding: 2vh;
+  margin-top: 2vh;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .result-prg {
   font-weight: 600;
-  margin-bottom: 8px;
-  color: #333;
+  margin-bottom: 0;
+  color: #000;
 }
 
 .audio-to-text {
   white-space: pre-wrap;
   line-height: 1.5;
   font-size: 0.95rem;
-  color: #444;
+  color: #000;
 }
 
 .summary-btn {

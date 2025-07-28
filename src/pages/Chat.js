@@ -1,57 +1,111 @@
-import React, { useState, useEffect } from 'react'
-import api from '../api'
-import { supabase } from '../supabase/client'
+import { useEffect, useState } from 'react'
+import { useParams } from 'react-router-dom'
 import '../App.css'
 
 const Chat = () => {
     const [file, setFile] = useState(null)
     const [transcript, setTranscript] = useState('')
     const [summary, setSummary] = useState('')
+    const [audioUrl, setAudioUrl] = useState('')
     const [error, setError] = useState('')
     const [loading, setLoading] = useState(false)
     const [summLoading, setSummLoading] = useState(false)
-    const [token, setToken] = useState('')
+    const [ttsLoading, setTtsLoading] = useState(false)
+    const { id } = useParams()
+    const isNewChat = window.location.pathname === '/chat/0'
+    const token = localStorage.getItem('token')
 
     useEffect(() => {
-        supabase.auth.getSession().then(({ data }) => {
-            setToken(data.session?.access_token || '')
-        })
-    }, [])
+        const controller = new AbortController()
 
-    const handleChange = e => {
+        const fetchOldChat = async () => {
+            if (isNewChat || !token) {
+                setTranscript('')
+                setSummary('')
+                setAudioUrl('')
+                return
+            }
+            try {
+                const res = await fetch('http://localhost:3001/history/', {
+                    method: 'GET',
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    },
+                    signal: controller.signal
+                },)
+
+                const data = await res.json()
+
+                if (!res.ok) {
+                    setError(data.error || 'Sohbet yüklenemedi.')
+                    return
+                }
+
+                const chat = data.find(c => String(c.id) === id)
+
+                if (!chat) {
+                    setError('Belirtilen sohbet bulunamadı.')
+                    return
+                }
+                if (!isNewChat) {
+                    setTranscript(chat.transcript || '')
+                    setSummary(chat.summary || '')
+                    setAudioUrl(chat.tts_url || '')
+                }
+
+            } catch (err) {
+            }
+
+        }
+
+        fetchOldChat()
+
+        return () => {
+            controller.abort()
+        }
+    }, [id, token, isNewChat])
+
+    const handleChange = (e) => {
         setFile(e.target.files[0])
         setTranscript('')
         setSummary('')
+        setAudioUrl('')
         setError('')
     }
 
     const handleUpload = async () => {
-        if (!file) return
+        if (!file) return alert('Önce bir dosya seçin.')
+        if (!token || token.split('.').length !== 3) {
+            setError('Geçerli bir token bulunamadı. Lütfen giriş yapın.')
+            return
+        }
+
         setLoading(true)
-        setError('')
         setTranscript('')
         setSummary('')
-
-        const formData = new FormData()
-        formData.append('audio', file)
+        setAudioUrl('')
+        setError('')
 
         try {
-            const res = await api.post(
-                '/speech/upload',
-                formData,
-                {
-                    headers: {
-                        'Content-Type': 'multipart/form-data',
-                        ...(token && { Authorization: `Bearer ${token}` })
-                    }
-                }
-            )
+            const formData = new FormData()
+            formData.append('audio', file)
 
-            console.log('Upload response:', res.data)
-            setTranscript(res.data.transcript || '')
+            const res = await fetch('http://localhost:3001/speech/upload', {
+                method: 'POST',
+                headers: { Authorization: `Bearer ${token}` },
+                body: formData
+            })
+
+            const data = await res.json()
+
+            if (!res.ok) {
+                setError(data.error || 'Transkripsiyon başarısız oldu.')
+            } else {
+                setTranscript(data.transcript)
+            }
         } catch (err) {
             console.error('Upload error:', err)
-            setError(err.response?.data?.message || 'Bir hata oluştu')
+            setError('Yükleme sırasında hata oluştu.')
         } finally {
             setLoading(false)
         }
@@ -60,53 +114,90 @@ const Chat = () => {
     const handleSummary = async () => {
         if (!transcript) return
         setSummLoading(true)
-        setError('')
         setSummary('')
+        setAudioUrl('')
+        setError('')
 
         try {
-            const res = await api.get(
-                '/speech/summary',
-                {
-                    headers: {
-                        ...(token && { Authorization: `Bearer ${token}` })
-                    }
-                }
-            )
+            const res = await fetch('http://localhost:3001/speech/summary', {
+                method: 'GET',
+                headers: { Authorization: `Bearer ${token}` }
+            })
 
-            console.log('Summary response:', res.data)
-            setSummary(res.data.summary || '')
+            const data = await res.json()
+
+            if (!res.ok) {
+                setError(data.error || 'Özet oluşturulurken hata oluştu.')
+            } else {
+                setSummary(data.summary)
+            }
         } catch (err) {
             console.error('Summary error:', err)
-            setError(err.response?.data?.message || 'Özet oluşturulurken hata oluştu')
+            setError('Özet alınırken hata oluştu.')
         } finally {
             setSummLoading(false)
         }
     }
 
+    const handleConvert = async () => {
+        if (!summary) return
+        setTtsLoading(true)
+        setError('')
+        setAudioUrl('')
+
+        try {
+            const res = await fetch('http://localhost:3001/tts', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`
+                },
+                body: JSON.stringify({ summary })
+            })
+
+            const data = await res.json()
+
+            if (!res.ok) {
+                setError(data.error || 'TTS başarısız oldu.')
+            } else {
+                setAudioUrl(data.audioUrl)
+            }
+        } catch (err) {
+            console.error('TTS error:', err)
+            setError('Ses dosyası oluşturulurken hata oluştu.')
+        } finally {
+            setTtsLoading(false)
+        }
+    }
+
     return (
         <div className="chatWrapper">
-            <div className="chat-container">
-                <label className="upload-label">
-                    Upload Audio File
-                    <input type="file" onChange={handleChange} />
-                </label>
-                <button onClick={handleUpload} disabled={loading || !file}>
-                    {loading ? 'Generating...' : 'Generate Text'}
-                </button>
-            </div>
+            {(isNewChat && !transcript) && (
+                <div className="chat-container">
+                    <label className="upload-label">
+                        Upload Audio File
+                        <input type="file" accept="audio/*" onChange={handleChange} />
+                    </label>
+                    <button onClick={handleUpload} disabled={loading || !file}>
+                        {loading ? 'Generating…' : 'Generate Text'}
+                    </button>
+                </div>
+            )}
 
             {transcript && (
                 <div className="result-block">
                     <p className="result-prg">Transcript:</p>
                     <div className="audio-to-text">{transcript}</div>
 
-                    <button
-                        className="summary-btn"
-                        onClick={handleSummary}
-                        disabled={summLoading}
-                    >
-                        {summLoading ? 'Generating…' : 'Generate Summary'}
-                    </button>
+                    {isNewChat && (
+                        <button
+                            className="summary-btn"
+                            onClick={handleSummary}
+                            disabled={summLoading}
+                        >
+                            {summLoading ? 'Generating…' : 'Generate Summary'}
+                        </button>
+                    )}
                 </div>
             )}
 
@@ -114,6 +205,20 @@ const Chat = () => {
                 <div className="result-block">
                     <p className="result-prg">Summary:</p>
                     <div className="audio-to-text">{summary}</div>
+
+                    {isNewChat && (
+                        <div className="tts-section">
+                            <button onClick={handleConvert} disabled={ttsLoading}>
+                                {ttsLoading ? 'Converting…' : 'Convert to Audio File'}
+                            </button>
+                        </div>
+                    )}
+                </div>
+            )}
+
+            {audioUrl && (
+                <div className="audio-player">
+                    <audio controls src={audioUrl} />
                 </div>
             )}
 

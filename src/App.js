@@ -1,5 +1,12 @@
+// src/App.js
 import React, { useState } from 'react'
-import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom'
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+  useLocation
+} from 'react-router-dom'
 import Navbar from './components/Navbar'
 import Home from './pages/Home'
 import Login from './pages/Login'
@@ -13,24 +20,36 @@ import AuthProvider from './context/AuthProvider'
 
 const AppContent = () => {
   const location = useLocation()
+  const token = localStorage.getItem('token')
   const isAuthPage = ['/login', '/register'].includes(location.pathname)
-
   const [showDropdown, setShowDropdown] = useState(false)
+
+  /* useEffect(() => {
+     const timer = setTimeout(() => {
+       localStorage.removeItem("token")
+       localStorage.clear()
+     }, 10000000)
+ 
+     return () => clearTimeout(timer)
+   }, []) */
+
+  if (!token && !isAuthPage) {
+    return <Navigate to="/login" replace />
+  }
 
   return (
     <>
       <header className="app-header">
         <img src={logo} alt="Logo" className="logo" />
-
         {!isAuthPage && (
           <FaRegUser
             className="profileIcon"
-            onClick={() => setShowDropdown((prev) => !prev)}
+            onClick={() => setShowDropdown(prev => !prev)}
           />
         )}
       </header>
 
-      <Navbar show={!isAuthPage} />
+      <Navbar show={!isAuthPage} refreshKey={1} />
 
       {!isAuthPage && (
         <ProfileMenu show={showDropdown} onClose={() => setShowDropdown(false)} />
@@ -54,7 +73,6 @@ const App = () => (
       <AppContent />
     </Router>
   </AuthProvider>
-
 )
 
 export default App
