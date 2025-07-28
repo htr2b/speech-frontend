@@ -62,7 +62,7 @@ const Chat = () => {
         return () => {
             controller.abort()
         }
-    }, [id, token, isNewChat])
+    }, [id, token, isNewChat, API_URL])
 
     const handleChange = (e) => {
         setFile(e.target.files[0])
