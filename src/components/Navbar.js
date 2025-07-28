@@ -19,8 +19,9 @@ const Navbar = ({ show }) => {
 
         const fetchHistory = async () => {
             if (!token) return
+            const API_URL = process.env.REACT_APP_API_URL
             try {
-                const res = await fetch('http://localhost:3001/history', {
+                const res = await fetch(`${API_URL}/history`, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }

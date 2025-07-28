@@ -14,10 +14,9 @@ const Chat = () => {
     const { id } = useParams()
     const isNewChat = window.location.pathname === '/chat/0'
     const token = localStorage.getItem('token')
-
+    const API_URL = process.env.REACT_APP_API_URL
     useEffect(() => {
         const controller = new AbortController()
-
         const fetchOldChat = async () => {
             if (isNewChat || !token) {
                 setTranscript('')
@@ -26,7 +25,7 @@ const Chat = () => {
                 return
             }
             try {
-                const res = await fetch('http://localhost:3001/history/', {
+                const res = await fetch(`${API_URL}/history`, {
                     method: 'GET',
                     headers: {
                         Authorization: `Bearer ${token}`
@@ -90,7 +89,7 @@ const Chat = () => {
             const formData = new FormData()
             formData.append('audio', file)
 
-            const res = await fetch('http://localhost:3001/speech/upload', {
+            const res = await fetch(`${API_URL}/speech/upload`, {
                 method: 'POST',
                 headers: { Authorization: `Bearer ${token}` },
                 body: formData
@@ -119,7 +118,7 @@ const Chat = () => {
         setError('')
 
         try {
-            const res = await fetch('http://localhost:3001/speech/summary', {
+            const res = await fetch(`${API_URL}/speech/summary`, {
                 method: 'GET',
                 headers: { Authorization: `Bearer ${token}` }
             })
@@ -146,7 +145,7 @@ const Chat = () => {
         setAudioUrl('')
 
         try {
-            const res = await fetch('http://localhost:3001/tts', {
+            const res = await fetch(`${API_URL}/tts`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

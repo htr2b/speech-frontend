@@ -5,6 +5,7 @@ const Home = () => {
 
     const handleUpgrade = async () => {
         const token = localStorage.getItem('token')   // login olurken kaydettiğimiz token
+        const API_URL = process.env.REACT_APP_API_URL
 
         if (!token) {
             alert("Önce giriş yapmanız gerekiyor!")
@@ -12,7 +13,7 @@ const Home = () => {
         }
 
         try {
-            const res = await fetch("http://localhost:3001/pro", {
+            const res = await fetch(`${API_URL}/pro`, {
                 method: "GET",
                 headers: {
                     Authorization: `Bearer ${token}`

@@ -25,8 +25,8 @@ const Login = () => {
         try {
             setErrorMsg("")
             setLoading(true)
-
-            const res = await fetch("http://localhost:3001/user/login", {
+            const API_URL = process.env.REACT_APP_API_URL
+            const res = await fetch(`${API_URL}/user/login`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email, password })
