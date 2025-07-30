@@ -1,70 +1,94 @@
-# Getting Started with Create React App
+Core Features
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+User management
 
-## Available Scripts
+Email/password signup & login flows powered by Supabase Auth
 
-In the project directory, you can run:
+Session persistence via local storage
 
-### `npm start`
+Audio capture & upload
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+In‑browser recording using the Web Speech API (or similar)
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+Drag‑and‑drop or file‑select upload of existing audio files
 
-### `npm test`
+Transcription
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+HTTP calls (via Axios) to a configured speech‑to‑text API (e.g. Whisper, an Edge Function, etc.)
 
-### `npm run build`
+Displays interim loading states and error messages
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Renders the final transcript in a scrollable view with “download as .txt” support
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Responsive UI
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Functional components with React Hooks (useState, useEffect, etc.)
 
-### `npm run eject`
+Client‑side routing with React Router
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+Modular CSS (CSS modules or styled‑components) for clean, maintainable styling
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+Tech Stack & Dependencies
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+Framework: React (Create React App)
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+Auth & Storage: @supabase/supabase‑js
 
-## Learn More
+HTTP client: Axios
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+Routing: react‑router‑dom
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+State & effects: React Hooks & Context
 
-### Code Splitting
+Build toolchain: npm scripts (npm start, npm run build, npm test)
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+Project Structure
 
-### Analyzing the Bundle Size
+csharp
+Kopyala
+Düzenle
+speech-frontend/
+├── public/                  # Static assets (favicon, index.html, etc.)
+├── src/
+│   ├── index.js             # App entry point
+│   ├── App.js               # Top‑level routes & layout
+│   ├── services/
+│   │   ├── supabaseClient.js  # Initializes Supabase client
+│   │   └── api.js             # Axios instance & API wrappers
+│   ├── components/          # Reusable UI bits
+│   │   ├── AuthForm.jsx
+│   │   ├── AudioRecorder.jsx
+│   │   └── TranscriptView.jsx
+│   └── pages/               # Route views
+│       ├── LoginPage.jsx
+│       ├── Dashboard.jsx
+│       └── NotFound.jsx
+├── .env.local               # Your REACT_APP_SUPABASE_URL/ANON_KEY & SPEECH_API_URL
+├── package.json
+└── README.md
+Getting Started
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+Clone & install
 
-### Making a Progressive Web App
+bash
+Kopyala
+Düzenle
+git clone https://github.com/htr2b/speech-frontend.git
+cd speech-frontend
+npm install
+Configure environment
+Create a .env.local at the project root with:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+text
+Kopyala
+Düzenle
+REACT_APP_SUPABASE_URL=https://<your‑project>.supabase.co
+REACT_APP_SUPABASE_ANON_KEY=<your‑anon‑public‑key>
+REACT_APP_SPEECH_API_URL=https://api.your‑speech‑service/transcribe
+Run & build
 
-### Advanced Configuration
+npm start to launch in development (http://localhost:3000)
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+npm run build to produce a production bundle
 
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+That’s the full‐stack flow: users authenticate → record/upload audio → frontend sends it off → receive & display transcript.
