@@ -12,13 +12,6 @@ Bootstrapped with Create React App and integrated with Supabase for authenticati
 3. [Demo / Screenshots](#demo--screenshots)  
 4. [Tech Stack & Dependencies](#tech-stack--dependencies)  
 5. [Installation](#installation)  
-6. [Configuration](#configuration)  
-7. [Available Scripts](#available-scripts)  
-8. [Usage](#usage)  
-9. [Configuration & Environment Variables](#configuration--environment-variables)  
-10. [Troubleshooting](#troubleshooting)  
-11. [Contributing](#contributing)  
-12. [License](#license)
 
 ---
 
