@@ -1,94 +1,75 @@
-Core Features
+# speech-frontend
 
-User management
+A React-based front end for recording, processing, and transcribing speech.  
+Bootstrapped with Create React App and integrated with Supabase for authentication and data storage.
 
-Email/password signup & login flows powered by Supabase Auth
+---
 
-Session persistence via local storage
+## Table of Contents
 
-Audio capture & upload
+1. [Introduction](#introduction)  
+2. [Features](#features)  
+3. [Demo / Screenshots](#demo--screenshots)  
+4. [Tech Stack & Dependencies](#tech-stack--dependencies)  
+5. [Installation](#installation)  
+6. [Configuration](#configuration)  
+7. [Available Scripts](#available-scripts)  
+8. [Usage](#usage)  
+9. [Configuration & Environment Variables](#configuration--environment-variables)  
+10. [Troubleshooting](#troubleshooting)  
+11. [Contributing](#contributing)  
+12. [License](#license)
 
-In‑browser recording using the Web Speech API (or similar)
+---
 
-Drag‑and‑drop or file‑select upload of existing audio files
+## Introduction
 
-Transcription
+**speech-frontend** is the client-side application for [**speech-backend**][backend-link]. It provides users with:
+- User authentication (sign-up / sign-in) via Supabase  
+- UI for recording or uploading audio  
+- Real-time transcription display  
+- History of past recordings and transcripts  
 
-HTTP calls (via Axios) to a configured speech‑to‑text API (e.g. Whisper, an Edge Function, etc.)
+> **[TODO]** Please adjust this paragraph to describe the core purpose and user flows of your app.
 
-Displays interim loading states and error messages
+---
 
-Renders the final transcript in a scrollable view with “download as .txt” support
+## Features
 
-Responsive UI
+- 🎤 **Record** or **upload** audio files  
+- 🔍 Interactive **playback** with transcript highlighting  
+- 🔐 **User accounts** & session management via Supabase Auth  
+- ☁️ **Store** audio & transcripts in Supabase database / storage  
+- ↩️ **Fetch** history of past sessions  
 
-Functional components with React Hooks (useState, useEffect, etc.)
+> **[TODO]** Add or refine feature list (e.g. real-time streaming, language selection, etc.).
 
-Client‑side routing with React Router
+---
 
-Modular CSS (CSS modules or styled‑components) for clean, maintainable styling
+## Demo / Screenshots
 
-Tech Stack & Dependencies
+https://echonote.onurkahan.com
 
-Framework: React (Create React App)
 
-Auth & Storage: @supabase/supabase‑js
+---
 
-HTTP client: Axios
+## Tech Stack & Dependencies
 
-Routing: react‑router‑dom
+- **Framework:** React 19 (Create React App)  
+- **Routing:** react-router-dom 7  
+- **Authentication & Storage:** @supabase/supabase-js, @supabase/auth-ui-react  
+- **HTTP Requests:** axios  
+- **Icons:** react-icons  
+- **Testing:** @testing-library/react, jest-dom, user-event  
+- **Build & Tooling:** react-scripts, ESLint  
 
-State & effects: React Hooks & Context
+_All dependencies are pulled from_ `package.json`.
 
-Build toolchain: npm scripts (npm start, npm run build, npm test)
+---
 
-Project Structure
+## Installation
 
-csharp
-Kopyala
-Düzenle
-speech-frontend/
-├── public/                  # Static assets (favicon, index.html, etc.)
-├── src/
-│   ├── index.js             # App entry point
-│   ├── App.js               # Top‑level routes & layout
-│   ├── services/
-│   │   ├── supabaseClient.js  # Initializes Supabase client
-│   │   └── api.js             # Axios instance & API wrappers
-│   ├── components/          # Reusable UI bits
-│   │   ├── AuthForm.jsx
-│   │   ├── AudioRecorder.jsx
-│   │   └── TranscriptView.jsx
-│   └── pages/               # Route views
-│       ├── LoginPage.jsx
-│       ├── Dashboard.jsx
-│       └── NotFound.jsx
-├── .env.local               # Your REACT_APP_SUPABASE_URL/ANON_KEY & SPEECH_API_URL
-├── package.json
-└── README.md
-Getting Started
-
-Clone & install
-
-bash
-Kopyala
-Düzenle
-git clone https://github.com/htr2b/speech-frontend.git
-cd speech-frontend
-npm install
-Configure environment
-Create a .env.local at the project root with:
-
-text
-Kopyala
-Düzenle
-REACT_APP_SUPABASE_URL=https://<your‑project>.supabase.co
-REACT_APP_SUPABASE_ANON_KEY=<your‑anon‑public‑key>
-REACT_APP_SPEECH_API_URL=https://api.your‑speech‑service/transcribe
-Run & build
-
-npm start to launch in development (http://localhost:3000)
-
-npm run build to produce a production bundle
-
-That’s the full‐stack flow: users authenticate → record/upload audio → frontend sends it off → receive & display transcript.
+1. **Clone** the repo  
+   ```bash
+   git clone https://github.com/htr2b/speech-frontend.git
+   cd speech-frontend
