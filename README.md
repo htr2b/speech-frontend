@@ -23,7 +23,6 @@ Bootstrapped with Create React App and integrated with Supabase for authenticati
 - Real-time transcription display  
 - History of past recordings and transcripts  
 
-> **[TODO]** Please adjust this paragraph to describe the core purpose and user flows of your app.
 
 ---
 
@@ -35,7 +34,6 @@ Bootstrapped with Create React App and integrated with Supabase for authenticati
 - ☁️ **Store** audio & transcripts in Supabase database / storage  
 - ↩️ **Fetch** history of past sessions  
 
-> **[TODO]** Add or refine feature list (e.g. real-time streaming, language selection, etc.).
 
 ---
 
