@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import '../App.css'
 
 const Chat = () => {
@@ -15,8 +15,11 @@ const Chat = () => {
     const isNewChat = window.location.pathname === '/chat/0'
     const token = localStorage.getItem('token')
     const API_URL = process.env.REACT_APP_API_URL
+    const navigate = useNavigate()
+
     useEffect(() => {
         const controller = new AbortController()
+
         const fetchOldChat = async () => {
             if (isNewChat || !token) {
                 setTranscript('')
@@ -73,18 +76,11 @@ const Chat = () => {
     }
 
     const handleUpload = async () => {
-        if (!file) return alert('Önce bir dosya seçin.')
-        if (!token || token.split('.').length !== 3) {
-            setError('Geçerli bir token bulunamadı. Lütfen giriş yapın.')
-            return
-        }
-
         setLoading(true)
         setTranscript('')
         setSummary('')
         setAudioUrl('')
         setError('')
-
         try {
             const formData = new FormData()
             formData.append('audio', file)
@@ -94,16 +90,20 @@ const Chat = () => {
                 headers: { Authorization: `Bearer ${token}` },
                 body: formData
             })
-
+            const resHistory = await fetch(`${API_URL}/history`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            })
+            if (resHistory.ok) {
+                const data = await resHistory.json()
+                navigate(`/chat/${data[0].id} `)
+            }
             const data = await res.json()
-
-            if (!res.ok) {
-                setError(data.error || 'Transkripsiyon başarısız oldu.')
-            } else {
+            if (res.ok) {
                 setTranscript(data.transcript)
             }
         } catch (err) {
-            console.error('Upload error:', err)
             setError('Yükleme sırasında hata oluştu.')
         } finally {
             setLoading(false)
@@ -120,7 +120,7 @@ const Chat = () => {
         try {
             const res = await fetch(`${API_URL}/speech/summary`, {
                 method: 'GET',
-                headers: { Authorization: `Bearer ${token}` }
+                headers: { Authorization: `Bearer ${token} ` }
             })
 
             const data = await res.json()
@@ -171,7 +171,7 @@ const Chat = () => {
 
     return (
         <div className="chatWrapper">
-            {(isNewChat && !transcript) && (
+            {(!transcript) && (
                 <div className="chat-container">
                     <label className="upload-label">
                         Upload Audio File
@@ -188,15 +188,15 @@ const Chat = () => {
                     <p className="result-prg">Transcript:</p>
                     <div className="audio-to-text">{transcript}</div>
 
-                    {isNewChat && (
-                        <button
-                            className="summary-btn"
-                            onClick={handleSummary}
-                            disabled={summLoading}
-                        >
-                            {summLoading ? 'Generating…' : 'Generate Summary'}
-                        </button>
-                    )}
+
+                    <button
+                        className="summary-btn"
+                        onClick={handleSummary}
+                        disabled={summLoading}
+                    >
+                        {summLoading ? 'Generating…' : 'Generate Summary'}
+                    </button>
+
                 </div>
             )}
 
@@ -205,13 +205,13 @@ const Chat = () => {
                     <p className="result-prg">Summary:</p>
                     <div className="audio-to-text">{summary}</div>
 
-                    {isNewChat && (
-                        <div className="tts-section">
-                            <button onClick={handleConvert} disabled={ttsLoading}>
-                                {ttsLoading ? 'Converting…' : 'Convert to Audio File'}
-                            </button>
-                        </div>
-                    )}
+
+                    <div className="tts-section">
+                        <button onClick={handleConvert} disabled={ttsLoading}>
+                            {ttsLoading ? 'Converting…' : 'Convert to Audio File'}
+                        </button>
+                    </div>
+
                 </div>
             )}
 

@@ -11,38 +11,36 @@ body {
   padding: 0;
   font-family: "Rockwell", sans-serif;
   color: #eaecef;
-  background-color: #fffdfdff;
+  background-color: #212121;
 }
 
 header {
-  background: #011627;
+  background: #212121;
   height: 7vh;
   display: flex;
   align-items: center;
   position: relative;
-}
-
-.menuIcon {
-  padding: 2vh 0;
-  padding-left: 4vw;
-  cursor: pointer;
+  justify-content: center;
 }
 
 .logo {
-  position: absolute;
-  right: 46vw;
-  top: 50%;
-  transform: translateY(-50%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  width: 100%;
+  max-width: 50px;
 }
 
 .sidenav {
   width: 15vw;
   height: 100vh;
+  top: 0;
   position: fixed;
-  background: #011627;
+  background: #1f1f1f;
   padding: 1vh 2vh;
   transition: left 0.5s;
-  left: -15%;
+  left: -100%;
 }
 
 .sidenav.active {
@@ -52,16 +50,20 @@ header {
 ul {
   padding: 0;
   margin: 0;
+  padding-top: 5vh;
 }
 
 ul li {
   list-style-type: none;
+  padding-bottom: 1vh;
 }
 
 ul li a,
 .linkItem {
   display: block;
-  padding: 10px 15px;
+  padding-left: 0;
+  padding-bottom: 1vh;
+  padding: 1vh;
   color: #eaecef;
   text-decoration: none;
   font-size: 16px;
@@ -76,7 +78,6 @@ ul li a:hover,
 
 .linkItem.active {
   background-color: #1e2a38;
-  font-weight: bold;
 }
 
 header svg,
@@ -94,7 +95,7 @@ header svg,
   top: 5vh;
   overflow: hidden;
   right: 3vw;
-  background: #eaecef;
+  background: #696969ff;
   border-radius: 30% 10% 30% 10%;
   display: none;
   transition: display 0.2s;
@@ -118,12 +119,12 @@ header svg,
   cursor: pointer;
 }
 
-.main,
-.main-active {
-  display: flex;
+.homePage {
+  display: block;
   font-size: 1.5vw;
-  color: black;
+  color: #d3d3d3;
   height: 90vh;
+  padding-left: 17vw;
 }
 
 .main {
@@ -131,11 +132,25 @@ header svg,
 }
 
 .main-active {
-  margin-left: 18vw;
+  display: block;
+  justify-content: center;
+  align-items: center;
 }
 
-button,
 .upgradePlan {
+  width: 11vw;
+  height: 6vh;
+  background-color: #3e5e81ff;
+  border: none;
+  border-radius: 4px;
+  color: #d3d3d3;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  margin-top: 1vh;
+}
+
+button {
   padding: 1vh;
   background-color: #3e5e81ff;
   border: none;
@@ -144,11 +159,6 @@ button,
   font-size: 1rem;
   cursor: pointer;
   transition: background-color 0.2s ease;
-}
-
-.upgradePlan {
-  width: 10vw;
-  height: 5vh;
 }
 
 button:hover:enabled {
@@ -195,9 +205,12 @@ button:disabled {
 
 .result-block {
   width: 100%;
-  max-width: 600px;
+  max-width: 50vw;
   background-color: #a0a0a0ff;
   border: 1px solid #ddd;
+  display: block;
+  align-items: center;
+  justify-content: center;
   border-radius: 4px;
   padding: 2vh;
   margin-top: 2vh;
@@ -206,6 +219,7 @@ button:disabled {
 
 .result-prg {
   font-weight: 600;
+  font-size: 1.4rem;
   margin-bottom: 0;
   color: #000;
 }
@@ -213,7 +227,7 @@ button:disabled {
 .audio-to-text {
   white-space: pre-wrap;
   line-height: 1.5;
-  font-size: 0.95rem;
+  font-size: 1.2rem;
   color: #000;
 }
 
@@ -225,4 +239,7 @@ button:disabled {
   margin-top: 20px;
   color: #d9534f;
   font-weight: 500;
+}
+.audio-player {
+  padding-top: 2vh;
 }

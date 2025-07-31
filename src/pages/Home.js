@@ -21,7 +21,6 @@ const Home = () => {
             })
 
             const data = await res.json()
-            console.log("Upgrade response:", data)
 
             if (!res.ok) {
                 alert(data.error || "Plan yükseltme başarısız!")
@@ -38,7 +37,7 @@ const Home = () => {
     }
 
     return (
-        <div>
+        <div className='homePage'>
             <h1>Welcome to the Speech Summarize AI APP</h1>
             <p>This app is designed for efficient speech-to-text summarization using advanced AI algorithms.</p>
 

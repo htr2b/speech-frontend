@@ -37,9 +37,8 @@ const Navbar = ({ show }) => {
                 console.error("History fetch error:", err)
             }
         }
-
         fetchHistory()
-        intervalId = setInterval(fetchHistory, 5000)
+        intervalId = setInterval(fetchHistory, 1000)
         return () => clearInterval(intervalId)
     }, [token])
 
@@ -59,22 +58,25 @@ const Navbar = ({ show }) => {
                         className="linkItem"
                         style={{ background: "none", border: "none", cursor: "pointer" }}
                     >
+
                         <FaPlus /> New Chat
                     </button>
                 </li>
 
                 {historyChats.map((chat) => (
+
                     <li key={`history-${chat.id}`}>
                         <NavLink
                             to={`/chat/${chat.id}`}
                             className={({ isActive }) => isActive ? 'linkItem active' : 'linkItem'}
                         >
+
                             {chat.title || `Chat ${chat.title}`}
                         </NavLink>
                     </li>
                 ))}
             </ul>
-        </div>
+        </div >
     )
 }
 
