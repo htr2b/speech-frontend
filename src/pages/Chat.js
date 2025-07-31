@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import '../App.css'
-
+export let historyChats = []
 const Chat = () => {
     const [file, setFile] = useState(null)
     const [transcript, setTranscript] = useState('')
@@ -12,99 +12,101 @@ const Chat = () => {
     const [summLoading, setSummLoading] = useState(false)
     const [ttsLoading, setTtsLoading] = useState(false)
     const { id } = useParams()
-    const isNewChat = window.location.pathname === '/chat/0'
-    const token = localStorage.getItem('token')
-    const API_URL = process.env.REACT_APP_API_URL
     const navigate = useNavigate()
 
+    const isNewChat = id === '0'
+    const token = localStorage.getItem('token')
+    const API_URL = process.env.REACT_APP_API_URL
+
     useEffect(() => {
-        const controller = new AbortController()
+        if (isNewChat || !token) {
+            setTranscript('')
+            setSummary('')
+            setAudioUrl('')
+            return
+        }
 
         const fetchOldChat = async () => {
-            if (isNewChat || !token) {
-                setTranscript('')
-                setSummary('')
-                setAudioUrl('')
-                return
-            }
             try {
                 const res = await fetch(`${API_URL}/history`, {
-                    method: 'GET',
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    },
-                    signal: controller.signal
-                },)
+                    headers: { Authorization: `Bearer ${token}` }
+                })
 
-                const data = await res.json()
+                if (res.ok) {
+                    const data = await res.json()
+                    const chat = data.find(c => String(c.id) === id)
 
-                if (!res.ok) {
-                    setError(data.error || 'Sohbet yüklenemedi.')
-                    return
+                    if (chat) {
+                        setTranscript(chat.transcript || '')
+                        setSummary(chat.summary || '')
+                        setAudioUrl(chat.tts_url || '')
+                    }
                 }
-
-                const chat = data.find(c => String(c.id) === id)
-
-                if (!chat) {
-                    setError('Belirtilen sohbet bulunamadı.')
-                    return
-                }
-                if (!isNewChat) {
-                    setTranscript(chat.transcript || '')
-                    setSummary(chat.summary || '')
-                    setAudioUrl(chat.tts_url || '')
-                }
-
             } catch (err) {
+                console.error('Chat yüklenemedi:', err)
             }
-
         }
 
         fetchOldChat()
-
-        return () => {
-            controller.abort()
-        }
-    }, [id, token, isNewChat, API_URL])
+    }, [id, isNewChat, API_URL, token])
 
     const handleChange = (e) => {
-        setFile(e.target.files[0])
-        setTranscript('')
-        setSummary('')
-        setAudioUrl('')
-        setError('')
+        const newFile = e.target.files[0]
+        setFile(newFile)
+
+        if (newFile) {
+            setTranscript('')
+            setSummary('')
+            setAudioUrl('')
+            setError('')
+        }
     }
 
     const handleUpload = async () => {
+        if (!file) return
+
         setLoading(true)
+        setError('')
         setTranscript('')
         setSummary('')
         setAudioUrl('')
-        setError('')
+
         try {
             const formData = new FormData()
             formData.append('audio', file)
 
-            const res = await fetch(`${API_URL}/speech/upload`, {
+            const uploadRes = await fetch(`${API_URL}/speech/upload`, {
                 method: 'POST',
                 headers: { Authorization: `Bearer ${token}` },
                 body: formData
             })
-            const resHistory = await fetch(`${API_URL}/history`, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            })
-            if (resHistory.ok) {
-                const data = await resHistory.json()
-                navigate(`/chat/${data[0].id} `)
-            }
-            const data = await res.json()
-            if (res.ok) {
+
+            if (uploadRes.ok) {
+                const data = await uploadRes.json()
                 setTranscript(data.transcript)
+
+                try {
+                    const historyRes = await fetch(`${API_URL}/history`, {
+                        headers: { Authorization: `Bearer ${token}` }
+                    })
+
+                    if (historyRes.ok) {
+                        const historyData = await historyRes.json()
+                        historyChats = historyData
+                        if (historyData[0]) {
+                            navigate(`/chat/${historyData[0].id}`)
+                        }
+                    }
+                } catch (historyErr) {
+                    console.log('History güncellenemedi ama transcript geldi')
+                }
+            } else {
+                const errorData = await uploadRes.json()
+                setError(errorData.error || 'Upload failed')
             }
         } catch (err) {
-            setError('Yükleme sırasında hata oluştu.')
+            setError('Yükleme hatası')
+            console.error(err)
         } finally {
             setLoading(false)
         }
@@ -112,27 +114,25 @@ const Chat = () => {
 
     const handleSummary = async () => {
         if (!transcript) return
+
         setSummLoading(true)
-        setSummary('')
-        setAudioUrl('')
         setError('')
 
         try {
-            const res = await fetch(`${API_URL}/speech/summary`, {
+            const res = await fetch(`${API_URL}/speech/summary?transcript_id=${id}`, {
                 method: 'GET',
-                headers: { Authorization: `Bearer ${token} ` }
+                headers: { Authorization: `Bearer ${token}` }
             })
 
-            const data = await res.json()
-
-            if (!res.ok) {
-                setError(data.error || 'Özet oluşturulurken hata oluştu.')
-            } else {
+            if (res.ok) {
+                const data = await res.json()
                 setSummary(data.summary)
+            } else {
+                const errorData = await res.json()
+                setError(errorData.error || 'Özet hatası')
             }
         } catch (err) {
-            console.error('Summary error:', err)
-            setError('Özet alınırken hata oluştu.')
+            setError('Özet hatası')
         } finally {
             setSummLoading(false)
         }
@@ -140,9 +140,9 @@ const Chat = () => {
 
     const handleConvert = async () => {
         if (!summary) return
+
         setTtsLoading(true)
         setError('')
-        setAudioUrl('')
 
         try {
             const res = await fetch(`${API_URL}/tts`, {
@@ -154,16 +154,14 @@ const Chat = () => {
                 body: JSON.stringify({ summary })
             })
 
-            const data = await res.json()
-
-            if (!res.ok) {
-                setError(data.error || 'TTS başarısız oldu.')
-            } else {
+            if (res.ok) {
+                const data = await res.json()
                 setAudioUrl(data.audioUrl)
+            } else {
+                setError('TTS hatası')
             }
         } catch (err) {
-            console.error('TTS error:', err)
-            setError('Ses dosyası oluşturulurken hata oluştu.')
+            setError('TTS hatası')
         } finally {
             setTtsLoading(false)
         }
@@ -171,7 +169,7 @@ const Chat = () => {
 
     return (
         <div className="chatWrapper">
-            {(!transcript) && (
+            {!transcript && (
                 <div className="chat-container">
                     <label className="upload-label">
                         Upload Audio File
@@ -187,8 +185,6 @@ const Chat = () => {
                 <div className="result-block">
                     <p className="result-prg">Transcript:</p>
                     <div className="audio-to-text">{transcript}</div>
-
-
                     <button
                         className="summary-btn"
                         onClick={handleSummary}
@@ -196,7 +192,6 @@ const Chat = () => {
                     >
                         {summLoading ? 'Generating…' : 'Generate Summary'}
                     </button>
-
                 </div>
             )}
 
@@ -204,14 +199,11 @@ const Chat = () => {
                 <div className="result-block">
                     <p className="result-prg">Summary:</p>
                     <div className="audio-to-text">{summary}</div>
-
-
                     <div className="tts-section">
                         <button onClick={handleConvert} disabled={ttsLoading}>
                             {ttsLoading ? 'Converting…' : 'Convert to Audio File'}
                         </button>
                     </div>
-
                 </div>
             )}
 

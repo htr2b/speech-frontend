@@ -13,36 +13,28 @@ const Navbar = ({ show }) => {
         navigate('/chat/0')
     }
 
-
     useEffect(() => {
-        let intervalId
+        if (!token) return
 
         const fetchHistory = async () => {
-            if (!token) return
-            const API_URL = process.env.REACT_APP_API_URL
             try {
-                const res = await fetch(`${API_URL}/history`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
+                const res = await fetch(`${process.env.REACT_APP_API_URL}/history`, {
+                    headers: { Authorization: `Bearer ${token}` }
                 })
+
                 if (res.ok) {
                     const data = await res.json()
                     setHistoryChats(data || [])
-                } else {
-                    const error = await res.json()
-                    console.error("History fetch failed:", error)
                 }
             } catch (err) {
                 console.error("History fetch error:", err)
             }
         }
+
         fetchHistory()
-        intervalId = setInterval(fetchHistory, 1000)
+        const intervalId = setInterval(fetchHistory, 1000)
         return () => clearInterval(intervalId)
     }, [token])
-
-
 
     return (
         <div className={show ? 'sidenav active' : 'sidenav'}>
@@ -58,25 +50,22 @@ const Navbar = ({ show }) => {
                         className="linkItem"
                         style={{ background: "none", border: "none", cursor: "pointer" }}
                     >
-
                         <FaPlus /> New Chat
                     </button>
                 </li>
 
                 {historyChats.map((chat) => (
-
-                    <li key={`history-${chat.id}`}>
+                    <li key={chat.id}>
                         <NavLink
                             to={`/chat/${chat.id}`}
                             className={({ isActive }) => isActive ? 'linkItem active' : 'linkItem'}
                         >
-
-                            {chat.title || `Chat ${chat.title}`}
+                            {chat.title || `Chat ${chat.id}`}
                         </NavLink>
                     </li>
                 ))}
             </ul>
-        </div >
+        </div>
     )
 }
 
